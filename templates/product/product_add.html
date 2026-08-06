@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product - E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card glass-card border-0 shadow-lg p-4">
+            <h3 class="fw-bold text-center mb-4"><i class="fa-solid fa-cart-plus me-2 text-primary"></i>Add New Product</h3>
+
+            <form action="{{ url_for('product_add') }}" method="POST">
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-bold">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required placeholder="e.g. Wireless Headphones">
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="price" class="form-label fw-bold">Price ($)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-control" id="price" name="price" required placeholder="49.99">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="color" class="form-label fw-bold">Color</label>
+                        <input type="text" class="form-control" id="color" name="color" required placeholder="Black">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="size" class="form-label fw-bold">Size</label>
+                        <input type="text" class="form-control" id="size" name="size" required placeholder="Medium / M">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label fw-bold">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Detailed product summary..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between gap-2">
+                    <a href="{{ url_for('product_read') }}" class="btn btn-outline-secondary w-50">Cancel</a>
+                    <button type="submit" class="btn btn-primary fw-bold w-50">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

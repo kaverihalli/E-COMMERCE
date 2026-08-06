@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Product - E-Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card glass-card border-0 shadow-lg p-4 text-center">
+            <div class="text-danger mb-3 fs-1">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Confirm Deletion</h3>
+            <p class="text-muted">
+                Are you sure you want to permanently delete <strong>"{{ product.name }}"</strong>? This action cannot be undone.
+            </p>
+
+            <div class="card bg-light border-0 p-3 mb-4 text-start">
+                <small class="d-block text-muted"><strong>Price:</strong> ${{ "%.2f"|format(product.price) }}</small>
+                <small class="d-block text-muted"><strong>Color / Size:</strong> {{ product.color }} / {{ product.size }}</small>
+            </div>
+
+            <form action="{{ url_for('product_delete', product_id=product.id) }}" method="POST">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('product_read') }}" class="btn btn-outline-secondary w-50 fw-bold">Cancel</a>
+                    <button type="submit" class="btn btn-danger w-50 fw-bold">Delete Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

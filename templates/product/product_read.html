@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Products - E-Shop{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0"><i class="fa-solid fa-boxes-stacked text-primary me-2"></i>Product Catalog</h2>
+    {% if session.get('user_role') in ['Seller', 'Admin'] %}
+        <a href="{{ url_for('product_add') }}" class="btn btn-primary fw-bold shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add New Product
+        </a>
+    {% endif %}
+</div>
+
+{% if products %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% for product in products %}
+        <div class="col">
+            <div class="card h-100 glass-card border-0 shadow-sm d-flex flex-column">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold text-dark mb-0">{{ product.name }}</h5>
+                        <span class="badge bg-warning text-dark fs-6">
+                            <i class="fa-solid fa-star me-1"></i>{{ product.ratings }}
+                        </span>
+                    </div>
+
+                    <p class="card-text text-muted small mb-3">{{ product.description }}</p>
+
+                    <div class="mb-3">
+                        <span class="badge bg-light text-dark border me-1">Color: {{ product.color }}</span>
+                        <span class="badge bg-light text-dark border">Size: {{ product.size }}</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block">
+                            <i class="fa-solid fa-store me-1"></i>Seller: {{ product.seller.name }}
+                        </small>
+                    </div>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold text-success">${{ "%.2f"|format(product.price) }}</span>
+                        
+                        {% if session.get('user_role') == 'Admin' or (session.get('user_role') == 'Seller' and product.seller_id == session.get('user_id')) %}
+                            <div>
+                                <a href="{{ url_for('product_edit', product_id=product.id) }}" class="btn btn-outline-secondary btn-sm me-1" title="Edit Product">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <a href="{{ url_for('product_delete', product_id=product.id) }}" class="btn btn-outline-danger btn-sm" title="Delete Product">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Display Existing Customer Reviews -->
+                <div class="card-body bg-light border-top rounded-bottom p-3">
+                    <h6 class="fw-bold mb-2 text-dark small"><i class="fa-solid fa-comments me-1 text-primary"></i> Customer Reviews ({{ product.reviews|length }})</h6>
+                    
+                    {% if product.reviews %}
+                        <div class="pe-1" style="max-height: 120px; overflow-y: auto;">
+                            {% for review in product.reviews %}
+                                <div class="bg-white p-2 mb-2 rounded border shadow-sm">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong class="small text-dark">{{ review.buyer.name }}</strong>
+                                        <span class="badge bg-warning text-dark" style="font-size: 10px;">
+                                            <i class="fa-solid fa-star me-1"></i>{{ review.rating }}/5
+                                        </span>
+                                    </div>
+                                    <p class="mb-0 text-muted small" style="font-size: 12px;">{{ review.comment }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted small mb-0 fst-italic" style="font-size: 12px;">No reviews submitted yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Add Review Form for Buyers -->
+                {% if session.get('user_role') == 'Buyer' %}
+                <div class="card-footer bg-transparent border-0 pt-0 pb-3 mt-2">
+                    <button class="btn btn-sm btn-outline-primary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#reviewForm{{ product.id }}">
+                        <i class="fa-solid fa-star me-1"></i> Leave a Review
+                    </button>
+                    <div class="collapse mt-2" id="reviewForm{{ product.id }}">
+                        <form action="{{ url_for('add_review', product_id=product.id) }}" method="POST" class="p-2 border rounded bg-white">
+                            <div class="mb-2">
+                                <label class="form-label small fw-bold mb-1">Rating</label>
+                                <select name="rating" class="form-select form-select-sm" required>
+                                    <option value="5" selected>5 - Excellent</option>
+                                    <option value="4">4 - Very Good</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="2">2 - Poor</option>
+                                    <option value="1">1 - Terrible</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <textarea name="comment" class="form-control form-control-sm" rows="2" placeholder="Write your review..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="glass-card p-5 text-center text-muted">
+        <i class="fa-solid fa-box-open fs-1 mb-3"></i>
+        <h5>No products found in the catalog.</h5>
+    </div>
+{% endif %}
+{% endblock %}
